@@ -20,8 +20,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     gh \
     git \
     htop \
-    libcudnn9-cuda-12 \
-    libcudnn9-dev-cuda-12 \
     libomp-dev \
     libopenblas-dev \
     ninja-build \

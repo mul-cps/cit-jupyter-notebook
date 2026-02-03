@@ -2,6 +2,21 @@ FROM quay.io/jupyter/datascience-notebook:lab-4.5.3 AS base
 
 ENV PIP_ROOT_USER_ACTION=ignore
 
+USER root
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean && \
+    apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    --no-install-recommends \
+    gh \
+    nodejs \
+    npm \
+    jq \
+    btop \
+    tmux \
+    && rm -rf /var/lib/apt/lists/*
+
+USER ${NB_USER}
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade \
     jupyterlab-git \
@@ -17,19 +32,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging
 
 USER root
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
-    --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /etc/apt/apt.conf.d/docker-clean && \
-    apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    --no-install-recommends \
-    gh \
-    nodejs \
-    npm \
-    jq \
-    btop \
-    tmux \
-    && rm -rf /var/lib/apt/lists/*
-
 RUN usermod -aG sudo jovyan
 
 ENV username=jovyan
