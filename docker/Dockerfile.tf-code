@@ -7,28 +7,29 @@ ENV PIP_ROOT_USER_ACTION=ignore
 USER root
 
 # Basic tooling + code-server + sudo
-# Basic tooling + code-server + sudo
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-    git \
-    curl \
-    ca-certificates \
     build-essential \
+    btop \
+    ca-certificates \
     cmake \
-    ninja-build \
-    pkg-config \
-    libopenblas-dev \
-    libomp-dev \
-    htop \
-    tmux \
+    curl \
     gh \
+    git \
+    htop \
+    libcudnn9-cuda-12 \
+    libcudnn9-dev-cuda-12 \
+    libomp-dev \
+    libopenblas-dev \
+    ninja-build \
     nodejs \
     npm \
-    btop \
-    sudo && \
+    pkg-config \
+    sudo \
+    tmux && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Give NB_USER sudo (needed for some workflows)
