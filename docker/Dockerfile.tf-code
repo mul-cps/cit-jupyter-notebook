@@ -61,10 +61,10 @@ RUN (mamba install -y -c conda-forge nb_conda_kernels || \
     /opt/conda/bin/conda install -y -c conda-forge nb_conda_kernels) && \
     /opt/conda/bin/conda clean -afy
 
-# TensorFlow GPU stack (no addons – they break on cp312)
+# TensorFlow GPU stack (no addons – they break on cp313)
 RUN --mount=type=cache,target=/home/${NB_USER}/.cache/pip \
     pip install --upgrade \
-    "tensorflow[and-cuda]==2.17.*" \
+    "tensorflow[and-cuda]==2.20.*" \
     tensorflow-datasets \
     keras \
     tf-keras \
