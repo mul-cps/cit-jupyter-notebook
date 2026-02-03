@@ -1,4 +1,4 @@
-FROM docker.io/cschranz/gpu-jupyter:v1.9_cuda-12.6_ubuntu-24.04_slim
+FROM docker.io/cschranz/gpu-jupyter:v1.10_cuda-12.6_ubuntu-24.04_slim
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -6,8 +6,7 @@ ENV PIP_ROOT_USER_ACTION=ignore
 
 USER root
 
-# Basic tooling + code-server + sudo
-# Basic tooling + code-server + sudo
+# Basic tooling
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     rm -f /etc/apt/apt.conf.d/docker-clean && \
@@ -24,14 +23,11 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     libomp-dev \
     htop \
     tmux \
-    openssh-client \
     gh \
     nodejs \
     npm \
     btop \
-    openssh-server \
     sudo && \
-    curl -fsSL https://code-server.dev/install.sh | sh && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN usermod -aG sudo "${NB_USER}"
@@ -44,9 +40,7 @@ RUN --mount=type=cache,target=/home/${NB_USER}/.cache/pip \
     jupyter-resource-usage \
     catppuccin-jupyterlab \
     jupyterlab-horizon-theme \
-    jupyter-sshd-proxy \
     jupyter-server-proxy \
-    git+https://github.com/bjoernellens1/jupyter-code-server \
     jupyter-glances-proxy \
     git-credential-helpers \
     jupyterlab-nvdashboard \
@@ -89,17 +83,7 @@ RUN --mount=type=cache,target=/home/${NB_USER}/.cache/pip \
     seaborn
 
 # Enable extensions
-RUN    jupyter server extension enable --sys-prefix jupyter_remote_desktop_proxy || true && \
-    jupyter server extension enable --sys-prefix jupyterlab_nvdashboard || true
-
-# Copy pre-notebook hooks
-COPY 00-prepare-readonly-home.sh /usr/local/bin/before-notebook.d/
-COPY fix-permissions.sh /usr/local/bin/before-notebook.d/
-RUN chmod +x /usr/local/bin/before-notebook.d/*.sh
-
-# IPython config
-RUN mkdir -p /root/.ipython/profile_default
-COPY ipython_kernel_config.py /root/.ipython/profile_default/ipython_kernel_config.py
+RUN jupyter server extension enable --sys-prefix jupyterlab_nvdashboard || true
 
 RUN chown -R ${NB_USER}:users /home/${NB_USER}
 
@@ -107,25 +91,3 @@ RUN chown -R ${NB_USER}:users /home/${NB_USER}
 RUN echo ". /opt/conda/etc/profile.d/conda.sh" >> /home/${NB_USER}/.bashrc && \
     echo "conda activate base" >> /home/${NB_USER}/.bashrc
 
-# Install VS Code extensions
-# Install Copilot
-# Install Copilot
-RUN apt-get update && apt-get install -y jq && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
-USER ${NB_USER}
-COPY --chown=${NB_USER}:users install-copilot.sh /tmp/install-copilot.sh
-RUN chmod +x /tmp/install-copilot.sh && /tmp/install-copilot.sh && rm /tmp/install-copilot.sh
-USER root
-
-RUN code-server --install-extension ms-python.python && \
-    code-server --install-extension ms-toolsai.jupyter && \
-    code-server --install-extension charliermarsh.ruff && \
-    code-server --install-extension tamasfe.even-better-toml && \
-    code-server --install-extension redhat.vscode-yaml && \
-    code-server --install-extension ms-azuretools.vscode-docker && \
-    code-server --install-extension mhutchie.git-graph
-
-# Switch to root to allow fixing permissions on startup
-USER root
-WORKDIR /home/${NB_USER}/work
