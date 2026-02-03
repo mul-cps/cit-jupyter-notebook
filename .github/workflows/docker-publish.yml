@@ -92,7 +92,7 @@ jobs:
       matrix: ${{ fromJson(needs.check-changes.outputs.matrix) }}
     
     env:
-      IMAGE_NAME: cps-jupyter-notebook
+      IMAGE_NAME: ${{ github.event.repository.name }}
 
     steps:
       - name: Checkout

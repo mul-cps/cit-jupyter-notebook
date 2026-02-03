@@ -8,7 +8,7 @@ This repository contains customized Jupyter Notebook Docker images tailored for 
 
 Images are automatically built and published to the GitHub Container Registry (GHCR).
 
-**Registry:** `ghcr.io/mul-cps/cps-jupyter-notebook`
+**Registry:** `ghcr.io/mul-cps/cit-jupyter-notebook`
 
 | Variant | Tag Suffix | Description |
 | :--- | :--- | :--- |
@@ -33,12 +33,12 @@ These images are designed to be used in:
 
 #### Run locally (Standard CPU)
 ```bash
-docker run -it --rm -p 8888:8888 ghcr.io/mul-cps/cps-jupyter-notebook:latest-standard-cpu
+docker run -it --rm -p 8888:8888 ghcr.io/mul-cps/cit-jupyter-notebook:latest-standard-cpu
 ```
 
 #### Run with GPU support (PyTorch)
 ```bash
-docker run --gpus all -it --rm -p 8888:8888 ghcr.io/mul-cps/cps-jupyter-notebook:latest-pytorch-code
+docker run --gpus all -it --rm -p 8888:8888 ghcr.io/mul-cps/cit-jupyter-notebook:latest-pytorch-code
 ```
 
 ---
